@@ -5,11 +5,11 @@ var parser = require('../src/parser/parser');
 
 // Create a Test Suite
 vows.describe('Linear expression parser').addBatch({
-    'given an empty string': {
-        topic: "",
+    'given a basic expression': {
+        topic: "2+2",
 
-        'gets an empty parse': function (topic) {
-            assert.deepEqual (parser.parse(topic), []);
+        'gets a successful parse': function (topic) {
+            assert.deepEqual (parser.parse(topic), ["+", 2, 2]);
         }
     }
 }).export(module);
