@@ -2,16 +2,22 @@ start
   = additive
 
 additive
-  = left:multiplicative "+" right:additive { return ["+", left, right]; }
+  = left:multiplicative space "+" space right:additive { return ["+", left, right]; }
   / multiplicative
 
 multiplicative
-  = left:primary "*" right:multiplicative { return ["*", left, right]; }
-  / primary
+  = left:integer space "*" space right:term { return ["*", left, right]; }
+  / term
+  / integer
 
-primary
-  = integer
-  / "(" additive:additive ")" { return additive; }
+term
+  = value:integer space name:varName { return ["var", value, name]; }
 
 integer "integer"
   = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+
+space 
+  = [ ]*
+
+varName 
+  = chars:[a-zA-Z ]+ { return chars.join("").trim(); }
