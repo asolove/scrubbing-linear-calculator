@@ -1,0 +1,29 @@
+{
+  "name": "scrubbing-linear-calculator",
+  "version": "0.0.1",
+  "author": "Adam Solove <asolove@gmail.com>",
+  "description": "An interactive browser scrubbing calculator, only for linear expressions",
+
+  "bin": {
+    "http-server": "./bin/http-server"
+  },
+
+  "scripts": {
+    "test": "vows --spec --isolate test/**"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asolove/scrubbing-linear-calculator.git"
+  },
+
+  "dependencies" : {
+    "pegjs": "0.7.x"
+  },
+
+  "devDependencies": {
+    "vows": "0.7.x"
+  },
+
+  "license": "MIT"
+}
