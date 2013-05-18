@@ -37,5 +37,15 @@ vows.describe('Linear expression parser').addBatch({
           ["*", 3, ["var", 40, "bar height"]],
           ["*", 2, ["var", 10, "padding"]]]);
     }
+  },
+
+  'given a non-linear expression': {
+    topic: "10 people * 30 cookies per person",
+
+    'fails': function (topic) {
+      assert.throws(function () {
+        parser.parse(topic);
+      });
+    }
   }
 }).export(module);
