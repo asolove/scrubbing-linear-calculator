@@ -17,7 +17,7 @@ integer "integer"
   = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
 
 space 
-  = [ ]*
+  = [ \t\n\r]*
 
 varName 
   = chars:[a-zA-Z ]+ { return chars.join("").trim(); }
