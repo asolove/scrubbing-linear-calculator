@@ -9,7 +9,7 @@ vows.describe('Linear expression parser').addBatch({
     topic: "2+2",
 
     'gets a successful parse': function (topic) {
-      assert.deepEqual(parser.parse(topic), ["+", 2, 2]);
+      assert.deepEqual(parser.parse(topic), { type: "+", l: 2, r: 2 });
     }
   }, 
 
@@ -17,15 +17,19 @@ vows.describe('Linear expression parser').addBatch({
     topic: "3 fig newtons",
 
     'gets a successful parse': function (topic) {
-      assert.deepEqual(parser.parse(topic), ["var", 3, "fig newtons"]);
+      assert.deepEqual(parser.parse(topic), { type: "var", value: 3, name: "fig newtons" });
     }
   },
 
   'given an expression with a named variable multiplied by a constant': {
-    topic: "2 * 3 fig newtons",
+    topic: "2 × 3 fig newtons",
 
     'gets a successful parse': function (topic) {
-      assert.deepEqual(parser.parse(topic), ["*", 2, ["var", 3, "fig newtons"]]);
+      assert.deepEqual(parser.parse(topic), { 
+        type: "*", 
+        l: 2, 
+        r: { type: "var", value: 3, name: "fig newtons" }
+      });
     }
   },
   'given a linear expression with variables': {
@@ -33,9 +37,10 @@ vows.describe('Linear expression parser').addBatch({
 
     'gets a successful parse': function (topic) {
       assert.deepEqual(parser.parse(topic), 
-        ["+",
-          ["*", 3, ["var", 40, "bar height"]],
-          ["*", 2, ["var", 10, "padding"]]]);
+        { type: "+",
+          l: { type: "*", l: 3, r: { type: "var", value: 40, name: "bar height" } },
+          r: { type: "*", l: 2, r: { type: "var", value: 10, name: "padding" } }
+      });
     }
   },
 

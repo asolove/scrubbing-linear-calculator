@@ -9,6 +9,7 @@
   },
 
   "scripts": {
+    "pretest": "pegjs src/parser/parser.pegjs && browserify src/ui.js -o public/bundle.js",
     "test": "vows --spec --isolate test/**"
   },
 
@@ -18,7 +19,8 @@
   },
 
   "dependencies" : {
-    "pegjs": "0.7.x"
+    "pegjs": "0.7.x",
+    "merge": "1.1.x"
   },
 
   "devDependencies": {
