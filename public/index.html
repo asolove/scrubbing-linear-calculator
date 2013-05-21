@@ -15,6 +15,7 @@
       border: 0px;
       color: #999; 
       padding: 10px 15px;
+      position: relative;
     }
     .input { background-color: #fff; }
     .output span { background-color: #fff;}
@@ -24,15 +25,22 @@
     .output { margin-top: -43px;}
     .input:focus { outline: none; }
     .wrap { width: 800px; margin: 30px auto; }
-    #width-ruler {  }
+    #width-ruler { visibility: hidden; float: left; width: auto; }
+    .answer { position: absolute; top: 12px; }
+    .equation { position: relative; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <input type="text" id="expression-1-input" class="input">
-    <div id="expression-1-output" class="output"></div>
-    <div id="width-ruler" class="output"></div>
+    <div id="equation-1" class="equation">
+      <input type="text" class="input">
+      <div class="output"></div>
+      <div class="answer"></div>
+    </div>
   </div>
+
+  <div id="width-ruler" class="output"></div>
+
   <script src="bundle.js"></script>
 </body>
 </html>
