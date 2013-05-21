@@ -1,11 +1,13 @@
 var parser = require("./parser/parser");
 var compiler = require("./compiler");
+var c = require("../lib/cassowary/bin/c");
 
 function Equation(parentEl){
   this.input = parentEl.querySelector(".input");
   this.output = parentEl.querySelector(".output");
   this.answer = parentEl.querySelector(".answer");
   this.model = undefined;
+  this.total = 0;
 
   this.input.addEventListener("keyup", this.update.bind(this));
 }
@@ -28,16 +30,33 @@ Equation.prototype = {
     var exprInput = this.input.value;
     this.input.value = exprInput.replace("*", String.fromCharCode(215));
 
-    var width = measure(exprInput);
-    this.answer.style.left = width + "px";
-    this.answer.innerHTML = "<span class='op'>=</span> <span class='total unlocked'>140</span>";
-
     try {
       var compiled = compiler.compile(parser.parse(exprInput));
       var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
       this.output.innerHTML = text;
-    } catch (e) {
+    } catch(e) {}
+
+    if(compiled) {
+      this.solver = this.buildSolver(compiled);
+      this.total = c("eOne")[0].value;
     }
+
+    if(exprInput.length > 0){
+      var width = measure(exprInput.replace(" ", "&nbsp;"));
+      console.log(exprInput, width);
+      this.answer.style.left = width + "px";
+      this.answer.innerHTML = "<span class='op'>=</span> <span class='total unlocked'>"+this.total+"</span>";
+    }
+  },
+
+  buildSolver: function(compiled){
+    var solver = new c.SimplexSolver();
+    solver.addConstraint(c(compiled.expression+"==eOne")[0]);
+    for(var name in compiled.variables){
+      var varInfo = compiled.variables[name];
+      solver.addConstraint(c(varInfo.token+"=="+varInfo.value)[0]);
+    }
+    return solver;
   }
 }
 
