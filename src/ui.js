@@ -10,10 +10,12 @@ function Equation(parentEl){
   this.answer = parentEl.querySelector(".answer");
   this.model = undefined;
   this.total = 0;
+  this.totalName = "eOne";
 
   this.input.addEventListener("keyup", this.update.bind(this));
-  this.el.addEventListener("calc:change:before", this.setCursor);
-  this.el.addEventListener("calc:change:after", this.setCursor);
+  this.el.addEventListener("calc:change:before", this.beforeChange.bind(this));
+  this.el.addEventListener("calc:change", this.change.bind(this));
+  this.el.addEventListener("calc:change:after", this.afterChange.bind(this));
 }
 
 Equation.prototype = {
@@ -35,14 +37,14 @@ Equation.prototype = {
     this.input.value = exprInput.replace("*", String.fromCharCode(215));
 
     try {
-      var compiled = compiler.compile(parser.parse(exprInput));
+      var compiled = this.compiled = compiler.compile(parser.parse(exprInput));
       var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
       this.output.innerHTML = text;
     } catch(e) {}
 
     if(compiled) {
       this.solver = this.buildSolver(compiled);
-      this.total = c("eOne")[0].value;
+      this.total = c(this.totalName)[0].value;
     }
 
     if(exprInput.length > 0){
@@ -54,16 +56,54 @@ Equation.prototype = {
 
   buildSolver: function(compiled){
     var solver = new c.SimplexSolver();
-    solver.addConstraint(c(compiled.expression+"==eOne")[0]);
+    solver.addConstraint(c(compiled.expression+"=="+this.totalName)[0]);
     for(var name in compiled.variables){
       var varInfo = compiled.variables[name];
       solver.addConstraint(c(varInfo.token+"=="+varInfo.value)[0]);
     }
+    solver.resolve();
     return solver;
+  },
+
+  beforeChange: function(e){
+    // fixme: escape variable names
+    this.editVar = c(e.target.dataset.variable)[0];
+    if(this.editVar.stay) this.solver.removeConstraint(this.editVar.stay);
+    this.startX = e.detail.x; 
+    this.startVal = this.editVar.value || 0;
+    this.setCursor();
+    this.solver.addEditVar(this.editVar, c.Strength.high).beginEdit(c);
+  },
+
+  afterChange: function(){
+    this.setCursor();
+    this.editVar.stay = new c.StayConstraint(this.editVar, this.editVar.val)
+    this.solver.addConstraint(this.editVar.stay);
+    this.solver.resolve();
+    this.solver.endEdit();
+    this.updateForSolver();
+    this.editVar = null;
+  },
+
+  change: function(e){
+    this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
+    this.updateForSolver();
   },
 
   setCursor: function(e){
     document.body.classList.toggle("dragging");
+  },
+
+  updateForSolver: function(){
+    for(var token in this.compiled.variables){
+      var val = c(token)[0].value;
+      var els = [].slice.call(this.el.querySelectorAll("[data-variable="+token+"] .number"));
+      els.forEach(function(el){
+        el.innerText = val;
+      }); 
+    }
+
+    document.querySelector(".total.number").innerText = c(this.totalName)[0].value;
   }
 }
 
