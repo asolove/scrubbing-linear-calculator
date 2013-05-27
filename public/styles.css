@@ -9,6 +9,7 @@ body {
   user-select: none;
 }
 .input, .output {
+  background: #fff;
   font-family: Helvetica, sans-serif;
   font-size: 18px;
   padding: 0px;
