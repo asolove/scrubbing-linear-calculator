@@ -29,7 +29,6 @@ function change(el){ return triggerCustomEvent("calc:change", el); }
 function afterChange(el){ return triggerCustomEvent("calc:change:after", el); }
 
 function triggerCustomEvent(name, el, details){
-	console.log("triggering", name);
 	el.dispatchEvent(new CustomEvent(name, {
 		details: details,
 		bubbles: true,

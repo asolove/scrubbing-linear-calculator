@@ -63,7 +63,6 @@ Equation.prototype = {
   },
 
   setCursor: function(e){
-    console.log("set cursor");
     document.body.classList.toggle("dragging");
   }
 }
