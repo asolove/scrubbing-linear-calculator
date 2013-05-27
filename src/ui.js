@@ -1,8 +1,10 @@
 var parser = require("./parser/parser");
 var compiler = require("./compiler");
 var c = require("../lib/cassowary/bin/c");
+var events = require("./events");
 
 function Equation(parentEl){
+  this.el = parentEl;
   this.input = parentEl.querySelector(".input");
   this.output = parentEl.querySelector(".output");
   this.answer = parentEl.querySelector(".answer");
@@ -10,13 +12,15 @@ function Equation(parentEl){
   this.total = 0;
 
   this.input.addEventListener("keyup", this.update.bind(this));
+  this.el.addEventListener("calc:change:before", this.setCursor);
+  this.el.addEventListener("calc:change:after", this.setCursor);
 }
 
 Equation.prototype = {
   constructor: Equation,
 
   displayItem: function(item){
-    if(item[0] == "var") return "<span class='number editable'>" + item[1] + "</span> <span class='name'>" + item[2] + "</span>";
+    if(item[0] == "var") return "<span class='variable' data-variable='"+item[2]+"'><span class='number editable'>" + item[1] + "</span> <span class='name'>" + item[2] + "</span></span>";
     if(item[0] == "num") return "<span class='number non-editable'>" + item[1] + "</span>";
     if(item[0] == "op" && item[1] == "*")
       return "<span class='op mult'>&times;</span>";
@@ -43,9 +47,8 @@ Equation.prototype = {
 
     if(exprInput.length > 0){
       var width = measure(exprInput.replace(" ", "&nbsp;"));
-      console.log(exprInput, width);
       this.answer.style.left = width + "px";
-      this.answer.innerHTML = "<span class='op'>=</span> <span class='total unlocked'>"+this.total+"</span>";
+      this.answer.innerHTML = "<span class='op'>=</span> <span class='total number unlocked'>"+this.total+"</span>";
     }
   },
 
@@ -57,6 +60,11 @@ Equation.prototype = {
       solver.addConstraint(c(varInfo.token+"=="+varInfo.value)[0]);
     }
     return solver;
+  },
+
+  setCursor: function(e){
+    console.log("set cursor");
+    document.body.classList.toggle("dragging");
   }
 }
 
@@ -69,8 +77,9 @@ function measure (text) {
 }
 
 function init(){
-  var e1 = new Equation(document.getElementById("equation-1"));
-  e1.input.focus();
+  var eq = new Equation(document.getElementById("equation-1"));
+  eq.input.focus();
+  events.attach(eq.el);
 }
 
 init();
