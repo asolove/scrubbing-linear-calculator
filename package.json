@@ -20,7 +20,9 @@
 
   "dependencies" : {
     "pegjs": "0.7.x",
-    "merge": "1.1.x"
+    "merge": "1.1.x",
+    "backbone": "1.0.x",
+    "jquery-browserify": "1.8.x"
   },
 
   "devDependencies": {

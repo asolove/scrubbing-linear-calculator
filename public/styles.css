@@ -8,27 +8,36 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-.input, .output {
+.equation {
   background: #fff;
+  color: #999; 
+  padding: 10px 30px 14px;
+  height: 20px;
+  position: relative;
+  border-bottom: 2px solid #ddd;
+}
+.equation, .input {
   font-family: Helvetica, sans-serif;
   font-size: 18px;
-  padding: 0px;
-  border: 0px;
-  color: #999; 
-  padding: 10px 15px;
-  position: relative;
 }
+.input {
+  border: 0px;
+  padding: 0px;
+  width: 100%;
+}
+.line-number { position: absolute; top: 15px; left: 10px; color: #ccc; font-size: 80%; }
+.input {  }
+.output { margin-top: -24px; }
 .input { background-color: #fff; }
 .output .number { color: #000; }
-.input, .output { width: 100%; }
+.output { width: 100%; }
 .unlocked { color: red; }
-.output { margin-top: -43px;}
 .input:focus { outline: none; }
 .wrap { width: 800px; margin: 30px auto; }
 #width-ruler { visibility: hidden; float: left; width: auto; }
 .answer { position: absolute; top: 12px; }
 .equation { position: relative; }
 
-body.dragging, .variable { cursor: col-resize; }
+body.dragging, .variable:not(.unlocked) { cursor: col-resize; }
 
-.variable:hover, .variable.dragging { background-color: rgba(100,100,255,0.1); }
+.variable:hover:not(.unlocked), .variable.dragging { background-color: rgba(100,100,255,0.1); }
