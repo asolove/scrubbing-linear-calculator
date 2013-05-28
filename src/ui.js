@@ -44,13 +44,13 @@ Equation.prototype = {
 
     if(compiled) {
       this.solver = this.buildSolver(compiled);
-      this.total = c(this.totalName)[0].value;
+      this.total = compiled.variables[this.totalName].value;
     }
 
     if(exprInput.length > 0){
       var width = measure(exprInput.replace(" ", "&nbsp;"));
       this.answer.style.left = width + "px";
-      this.answer.innerHTML = "<span class='op'>=</span> <span class='total number unlocked'>"+this.total+"</span>";
+      this.answer.innerHTML = "<span class='op'>=</span> <span class='variable unlocked' data-variable='"+this.totalName+"'><span class='number'>"+this.total+"</span></span>";
     }
   },
 
@@ -62,6 +62,8 @@ Equation.prototype = {
       solver.addConstraint(c(varInfo.token+"=="+varInfo.value)[0]);
     }
     solver.resolve();
+    compiled.variables[this.totalName] =
+      {name: this.totalName, token: this.totalName, value: c(this.totalName)[0].value };
     return solver;
   },
 
@@ -71,12 +73,12 @@ Equation.prototype = {
     if(this.editVar.stay) this.solver.removeConstraint(this.editVar.stay);
     this.startX = e.detail.x; 
     this.startVal = this.editVar.value || 0;
-    this.setCursor();
+    this.markAsMoving(this.editVar, true);
     this.solver.addEditVar(this.editVar, c.Strength.high).beginEdit(c);
   },
 
   afterChange: function(){
-    this.setCursor();
+    this.markAsMoving(this.editVar, false);
     this.editVar.stay = new c.StayConstraint(this.editVar, this.editVar.val)
     this.solver.addConstraint(this.editVar.stay);
     this.solver.resolve();
@@ -90,8 +92,11 @@ Equation.prototype = {
     this.updateForSolver();
   },
 
-  setCursor: function(e){
-    document.body.classList.toggle("dragging");
+  markAsMoving: function(variable, moving){
+    var method = moving ? "add" : "remove";
+    document.body.classList[method]("dragging");
+    var els = [].slice.call(this.el.querySelectorAll("[data-variable="+variable.name+"]"));
+    els.forEach(function(el){ el.classList[method]("dragging"); });
   },
 
   updateForSolver: function(){
@@ -102,8 +107,6 @@ Equation.prototype = {
         el.innerText = val;
       }); 
     }
-
-    document.querySelector(".total.number").innerText = c(this.totalName)[0].value;
   }
 }
 

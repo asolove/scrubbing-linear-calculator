@@ -19,7 +19,6 @@ body {
   position: relative;
 }
 .input { background-color: #fff; }
-.output span { background-color: #fff;}
 .output .number { color: #000; }
 .input, .output { width: 100%; }
 .unlocked { color: red; }
@@ -31,3 +30,5 @@ body {
 .equation { position: relative; }
 
 body.dragging, .variable { cursor: col-resize; }
+
+.variable:hover, .variable.dragging { background-color: rgba(100,100,255,0.1); }
