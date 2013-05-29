@@ -32,7 +32,7 @@ function expression (expr) {
 function variable (varInfo) {
   var token = escapeVarName(varInfo.name);
   var variables = {};
-  variables[varInfo.name] = {
+  variables[token] = {
     name: varInfo.name,
     token: token,
     value: varInfo.value
@@ -41,7 +41,7 @@ function variable (varInfo) {
   return {
     expression: token,
     variables: variables,
-    display: [["var", varInfo.value, varInfo.name]]
+    display: [["var", varInfo.value, varInfo.name, token]]
   };
 }
 

@@ -1,15 +1,21 @@
 exports.attach = function(el){
 	var moving;
+	var startedMoving;
 	el.addEventListener("mousedown", function(e){
 		var target = findChangeableVariableNode(e.target);
 		if(!target) return;
 
 		moving = target;
-		beforeChange(moving, e.clientX);
+		startedMoving = false;
 	});
 
 	document.body.addEventListener("mousemove", function(e){
-		if(moving) change(moving, e.clientX);
+		if(!moving) return;
+		if(!startedMoving){
+			beforeChange(moving, e.clientX);
+			startedMoving = true;
+		}
+		change(moving, e.clientX);
 	});
 
 	document.body.addEventListener("mouseup", function(e){

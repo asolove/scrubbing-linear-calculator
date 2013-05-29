@@ -27,12 +27,12 @@ vows.describe('Compiling a linear expression').addBatch({
       assert.deepEqual(topic, {
         expression: "3*bar-height",
         variables: {
-          "bar height": { token: "bar-height", value: 40, name: "bar height" }
+          "bar-height": { token: "bar-height", value: 40, name: "bar height" }
         },
         display: [
           ["num", 3],
           ["op", "*"],
-          ["var", 40, "bar height"]
+          ["var", 40, "bar height", "bar-height"]
         ]
       });
     }

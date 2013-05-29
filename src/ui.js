@@ -71,7 +71,7 @@ Equation.prototype = {
   beforeChange: function(e){
     // fixme: escape variable names
     this.editVar = this.variable(e.target.dataset.variable);
-    if(this.editVar.stay) this.solver.removeConstraint(this.editVar.stay);
+    this.removeStay(this.editVar);
     this.startX = e.detail.x; 
     this.startVal = this.editVar.value || 0;
     this.markAsMoving(this.editVar, true);
@@ -79,9 +79,9 @@ Equation.prototype = {
   },
 
   afterChange: function(){
+    if(!this.editVar) return;
     this.markAsMoving(this.editVar, false);
-    this.editVar.stay = new c.StayConstraint(this.editVar, this.editVar.val)
-    this.solver.addConstraint(this.editVar.stay);
+    this.addStay(this.editVar);
     this.solver.resolve();
     this.solver.endEdit();
     this.updateForSolver();
@@ -97,17 +97,33 @@ Equation.prototype = {
     return c(name)[0];
   },
 
+  addStay: function(variable){
+    if(variable.stay) return;
+    variable.stay = new c.StayConstraint(variable, c.Strength.required, 0);
+    this.solver.addConstraint(variable.stay);
+  },
+
+  removeStay: function(variable){
+    if(!variable.stay) return;
+    this.solver.removeConstraint(variable.stay);
+    variable.stay = null;
+  },
+
   unlock: function(e){
-    var varName = e.target.dataset.variable;
-    var variable = this.variable(varName);
-    if(variable.stay) this.solver.removeConstraint(variable.stay);
+    var varToken = e.target.dataset.variable;
+    var variable = this.variable(varToken);
+    this.removeStay(variable);
 
     //fixme" delete unlocked from previoulsy-unlocked var.
     variable.unlocked = true;
+    var self = this;
     [].slice.call(this.el.querySelectorAll(".unlocked")).forEach(function(el){
       el.classList.remove("unlocked");
+      var variable = self.variable(el.dataset.variable);
+      self.addStay(variable);
+      variable.unlocked = false;
     });
-    [].slice.call(this.el.querySelectorAll("[data-variable="+varName+"]")).forEach(function(el){
+    [].slice.call(this.el.querySelectorAll("[data-variable="+varToken+"]")).forEach(function(el){
       el.classList.add("unlocked");
     });
   },
