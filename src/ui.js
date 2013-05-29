@@ -57,7 +57,9 @@ Equation.prototype = {
 
   buildSolver: function(compiled){
     var solver = new c.SimplexSolver();
-    solver.addConstraint(c(compiled.expression+"=="+this.totalName)[0]);
+    var constraint = c(compiled.expression+"=="+this.totalName)[0];
+    constraint.strength = c.Strength.required;
+    solver.addConstraint(constraint);
     for(var name in compiled.variables){
       var varInfo = compiled.variables[name];
       solver.addConstraint(c(varInfo.token+"=="+varInfo.value)[0]);
@@ -144,7 +146,7 @@ Equation.prototype = {
       }); 
     }
   }
-}
+};
 
 var ruler;
 function measure (text) {
