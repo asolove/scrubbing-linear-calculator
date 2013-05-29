@@ -23,7 +23,7 @@ Equation.prototype = {
   constructor: Equation,
 
   displayItem: function(item){
-    if(item[0] == "var") return "<span class='variable' data-variable='"+item[2]+"'><span class='number editable'>" + item[1] + "</span> <span class='name'>" + item[2] + "</span></span>";
+    if(item[0] == "var") return "<span class='variable' data-variable='"+item[3]+"'><span class='number editable'>" + item[1] + "</span> <span class='name'>" + item[2] + "</span></span>";
     if(item[0] == "num") return "<span class='number non-editable'>" + item[1] + "</span>";
     if(item[0] == "op" && item[1] == "*")
       return "<span class='op mult'>&times;</span>";

@@ -46,7 +46,7 @@ function variable (varInfo) {
 }
 
 function escapeVarName (name) {
-  return name.replace(/\s/g, "-");
+  return name.replace(/\s/g, "_");
 }
 
 exports.compile = compile;
