@@ -27,7 +27,6 @@ body {
 .input:focus { outline: none; }
 .wrap { width: 800px; margin: 30px auto; }
 #width-ruler { visibility: hidden; float: left; width: auto; }
-.answer { position: absolute; top: 12px; }
 .equation { position: relative; }
 
 body.dragging, .variable { cursor: col-resize; }

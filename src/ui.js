@@ -33,26 +33,37 @@ Equation.prototype = {
     return item[1];
   },
 
+  // has something changed about the value of this.compiled in the new compiled?
+  valueChanged: function(compiled){
+    if(!this.compiled) return true;
+    if(compiled.display.length != this.compiled.display.length) return true;
+
+    var lastExpr = compiled.display[compiled.display.length-1];
+    var lastOldExpr = this.compiled.display[this.compiled.display.length-1];
+    if((lastExpr[0] == "num" || lastExpr[0] == "var") && lastExpr[1] != lastOldExpr[1]) return true;
+    return false;
+  },
+
   update: function(){
     var exprInput = this.input.value;
     this.input.value = exprInput.replace("*", String.fromCharCode(215));
 
     try {
-      var compiled = this.compiled = compiler.compile(parser.parse(exprInput));
-      var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
-      this.output.innerHTML = text;
+      var compiled = compiler.compile(parser.parse(exprInput));
+
+      if(compiled) {
+        if(this.valueChanged(compiled)){
+          this.compiled = compiled;
+          this.solver = this.buildSolver(compiled);
+          this.total = compiled.variables[this.totalName].value;
+        }
+
+        var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
+        if(exprInput.length > 0){
+          this.output.innerHTML  = text + " <span class='op'>=</span> <span class='variable unlocked' data-variable='"+this.totalName+"'><span class='number'>"+this.total+"</span></span>";
+        }
+      }
     } catch(e) {}
-
-    if(compiled) {
-      this.solver = this.buildSolver(compiled);
-      this.total = compiled.variables[this.totalName].value;
-    }
-
-    if(exprInput.length > 0){
-      var width = measure(exprInput.replace(" ", "&nbsp;"));
-      this.answer.style.left = width + "px";
-      this.answer.innerHTML = "<span class='op'>=</span> <span class='variable unlocked' data-variable='"+this.totalName+"'><span class='number'>"+this.total+"</span></span>";
-    }
   },
 
   buildSolver: function(compiled){
@@ -147,14 +158,6 @@ Equation.prototype = {
     }
   }
 };
-
-var ruler;
-function measure (text) {
-  if(!ruler) ruler = document.getElementById("width-ruler");
-  ruler.innerHTML = text;
-  var width = ruler.offsetWidth;
-  return width;
-}
 
 function init(){
   var eq = new Equation(document.getElementById("equation-1"));
