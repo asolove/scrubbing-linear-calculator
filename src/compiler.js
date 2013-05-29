@@ -14,7 +14,7 @@ function compile (parseTree) {
 function number (num) {
   return {
     expression: num,
-    variables: [],
+    variables: {},
     display: [["num", num]]
   };
 }

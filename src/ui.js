@@ -70,7 +70,7 @@ Equation.prototype = {
 
   beforeChange: function(e){
     // fixme: escape variable names
-    this.editVar = c(e.target.dataset.variable)[0];
+    this.editVar = this.variable(e.target.dataset.variable);
     if(this.editVar.stay) this.solver.removeConstraint(this.editVar.stay);
     this.startX = e.detail.x; 
     this.startVal = this.editVar.value || 0;
@@ -100,15 +100,14 @@ Equation.prototype = {
   unlock: function(e){
     var varName = e.target.dataset.variable;
     var variable = this.variable(varName);
+    if(variable.stay) this.solver.removeConstraint(variable.stay);
 
     //fixme" delete unlocked from previoulsy-unlocked var.
     variable.unlocked = true;
     [].slice.call(this.el.querySelectorAll(".unlocked")).forEach(function(el){
-      console.log("removing unlocked from", el);
       el.classList.remove("unlocked");
     });
     [].slice.call(this.el.querySelectorAll("[data-variable="+varName+"]")).forEach(function(el){
-      console.log("adding unlocked to", el);
       el.classList.add("unlocked");
     });
   },
@@ -122,7 +121,7 @@ Equation.prototype = {
 
   updateForSolver: function(){
     for(var token in this.compiled.variables){
-      var val = c(token)[0].value;
+      var val = this.variable(token).value;
       var els = [].slice.call(this.el.querySelectorAll("[data-variable="+token+"] .number"));
       els.forEach(function(el){
         el.innerText = val;
