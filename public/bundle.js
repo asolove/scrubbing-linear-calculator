@@ -17,6 +17,7 @@ function Equation(parentEl){
   this.el.addEventListener("calc:change:before", this.beforeChange.bind(this));
   this.el.addEventListener("calc:change", this.change.bind(this));
   this.el.addEventListener("calc:change:after", this.afterChange.bind(this));
+  this.el.addEventListener("calc:unlock", this.unlock.bind(this));
 }
 
 Equation.prototype = {
@@ -91,6 +92,26 @@ Equation.prototype = {
   change: function(e){
     this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
     this.updateForSolver();
+  },
+
+  variable: function(name){
+    return c(name)[0];
+  },
+
+  unlock: function(e){
+    var varName = e.target.dataset.variable;
+    var variable = this.variable(varName);
+
+    //fixme" delete unlocked from previoulsy-unlocked var.
+    variable.unlocked = true;
+    [].slice.call(this.el.querySelectorAll(".unlocked")).forEach(function(el){
+      console.log("removing unlocked from", el);
+      el.classList.remove("unlocked");
+    });
+    [].slice.call(this.el.querySelectorAll("[data-variable="+varName+"]")).forEach(function(el){
+      console.log("adding unlocked to", el);
+      el.classList.add("unlocked");
+    });
   },
 
   markAsMoving: function(variable, moving){
@@ -698,7 +719,7 @@ var l=this.rows.get(this._objective);l.setVariable(i,b.strength.symbolicWeight.v
 exports.attach = function(el){
 	var moving;
 	el.addEventListener("mousedown", function(e){
-		var target = findVariableNode(e.target);
+		var target = findChangeableVariableNode(e.target);
 		if(!target) return;
 
 		moving = target;
@@ -713,7 +734,19 @@ exports.attach = function(el){
 		if(moving) afterChange(moving, e.clientX);
 		moving = null;
 	});
+
+	document.body.addEventListener("dblclick", function(e){
+		var node = findChangeableVariableNode(e.target);
+		if(!node) return;
+		unlock(node);
+	});
 }; 
+
+function findChangeableVariableNode(el){
+	var variableNode = findVariableNode(el);
+	if(variableNode && variableNode.classList.contains("unlocked")) return null;
+	return variableNode;
+}
 
 function findVariableNode(el){
 	if(el.dataset.variable) return el;
@@ -724,6 +757,7 @@ function findVariableNode(el){
 function beforeChange(el, x){ return triggerCustomEvent("calc:change:before", el, { x: x }) }
 function change(el, x){ return triggerCustomEvent("calc:change", el, { x: x }); }
 function afterChange(el, x){ return triggerCustomEvent("calc:change:after", el, { x: x }); }
+function unlock(el){ return triggerCustomEvent("calc:unlock", el); }
 
 function triggerCustomEvent(name, el, detail){
 	el.dispatchEvent(new CustomEvent(name, {

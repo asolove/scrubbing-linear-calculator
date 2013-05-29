@@ -1,7 +1,7 @@
 exports.attach = function(el){
 	var moving;
 	el.addEventListener("mousedown", function(e){
-		var target = findVariableNode(e.target);
+		var target = findChangeableVariableNode(e.target);
 		if(!target) return;
 
 		moving = target;
@@ -16,7 +16,19 @@ exports.attach = function(el){
 		if(moving) afterChange(moving, e.clientX);
 		moving = null;
 	});
+
+	document.body.addEventListener("dblclick", function(e){
+		var node = findChangeableVariableNode(e.target);
+		if(!node) return;
+		unlock(node);
+	});
 }; 
+
+function findChangeableVariableNode(el){
+	var variableNode = findVariableNode(el);
+	if(variableNode && variableNode.classList.contains("unlocked")) return null;
+	return variableNode;
+}
 
 function findVariableNode(el){
 	if(el.dataset.variable) return el;
@@ -27,6 +39,7 @@ function findVariableNode(el){
 function beforeChange(el, x){ return triggerCustomEvent("calc:change:before", el, { x: x }) }
 function change(el, x){ return triggerCustomEvent("calc:change", el, { x: x }); }
 function afterChange(el, x){ return triggerCustomEvent("calc:change:after", el, { x: x }); }
+function unlock(el){ return triggerCustomEvent("calc:unlock", el); }
 
 function triggerCustomEvent(name, el, detail){
 	el.dispatchEvent(new CustomEvent(name, {

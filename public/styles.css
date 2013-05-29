@@ -21,7 +21,8 @@ body {
 .input { background-color: #fff; }
 .output .number { color: #000; }
 .input, .output { width: 100%; }
-.unlocked { color: red; }
+.unlocked,
+.output .unlocked .number { color: red; }
 .output { margin-top: -43px;}
 .input:focus { outline: none; }
 .wrap { width: 800px; margin: 30px auto; }

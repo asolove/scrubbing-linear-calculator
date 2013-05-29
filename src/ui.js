@@ -16,6 +16,7 @@ function Equation(parentEl){
   this.el.addEventListener("calc:change:before", this.beforeChange.bind(this));
   this.el.addEventListener("calc:change", this.change.bind(this));
   this.el.addEventListener("calc:change:after", this.afterChange.bind(this));
+  this.el.addEventListener("calc:unlock", this.unlock.bind(this));
 }
 
 Equation.prototype = {
@@ -90,6 +91,26 @@ Equation.prototype = {
   change: function(e){
     this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
     this.updateForSolver();
+  },
+
+  variable: function(name){
+    return c(name)[0];
+  },
+
+  unlock: function(e){
+    var varName = e.target.dataset.variable;
+    var variable = this.variable(varName);
+
+    //fixme" delete unlocked from previoulsy-unlocked var.
+    variable.unlocked = true;
+    [].slice.call(this.el.querySelectorAll(".unlocked")).forEach(function(el){
+      console.log("removing unlocked from", el);
+      el.classList.remove("unlocked");
+    });
+    [].slice.call(this.el.querySelectorAll("[data-variable="+varName+"]")).forEach(function(el){
+      console.log("adding unlocked to", el);
+      el.classList.add("unlocked");
+    });
   },
 
   markAsMoving: function(variable, moving){
