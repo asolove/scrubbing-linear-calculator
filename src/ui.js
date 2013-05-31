@@ -20,7 +20,6 @@ function Equation(parentEl){
 }
 
 function formatNumber(num){
-  console.log("formatting", num, "as", Math.floor(num) == num ? num.toFixed(0) : num.toFixed(2));
   return Math.floor(num) == num ? num.toFixed(0) : num.toFixed(2);
 }
 
@@ -91,7 +90,7 @@ Equation.prototype = {
   },
 
   change: function(e){
-    this.solver.suggestValue(this.editVar, this.startVal+(e.detail.x-this.startX)/2).resolve();
+    this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
     this.updateForSolver();
   },
 
@@ -114,7 +113,6 @@ Equation.prototype = {
   unlock: function(e){
     var varToken = e.target.dataset.variable;
     var variable = this.variable(varToken);
-    this.removeStay(variable);
 
     //fixme" delete unlocked from previoulsy-unlocked var.
     variable.unlocked = true;
@@ -128,6 +126,8 @@ Equation.prototype = {
     [].slice.call(this.el.querySelectorAll("[data-variable="+varToken+"]")).forEach(function(el){
       el.classList.add("unlocked");
     });
+
+    this.removeStay(variable);
   },
 
   markAsMoving: function(variable, moving){
