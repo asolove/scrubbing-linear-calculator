@@ -19,12 +19,17 @@ function Equation(parentEl){
   this.el.addEventListener("calc:unlock", this.unlock.bind(this));
 }
 
+function formatNumber(num){
+  console.log("formatting", num, "as", Math.floor(num) == num ? num.toFixed(0) : num.toFixed(2));
+  return Math.floor(num) == num ? num.toFixed(0) : num.toFixed(2);
+}
+
 Equation.prototype = {
   constructor: Equation,
 
   displayItem: function(item){
-    if(item[0] == "var") return "<span class='variable' data-variable='"+item[3]+"'><span class='number editable'>" + item[1] + "</span> <span class='name'>" + item[2] + "</span></span>";
-    if(item[0] == "num") return "<span class='number non-editable'>" + item[1] + "</span>";
+    if(item[0] == "var") return "<span class='variable' data-variable='"+item[3]+"'><span class='number editable'>" + formatNumber(item[1]) + "</span> <span class='name'>" + item[2] + "</span></span>";
+    if(item[0] == "num") return "<span class='number non-editable'>" + formatNumber(item[1]) + "</span>";
     if(item[0] == "op" && item[1] == "*")
       return "<span class='op mult'>&times;</span>";
     if(item[0] == "op")
@@ -86,7 +91,7 @@ Equation.prototype = {
   },
 
   change: function(e){
-    this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
+    this.solver.suggestValue(this.editVar, this.startVal+(e.detail.x-this.startX)/2).resolve();
     this.updateForSolver();
   },
 
@@ -96,7 +101,6 @@ Equation.prototype = {
 
   addStay: function(variable){
     if(variable.stay) return;
-    console.log("adding stay for", variable, "at", variable.value);
     variable.stay = new c.StayConstraint(variable, c.Strength.required);
     this.solver.addConstraint(variable.stay);
   },
@@ -138,7 +142,7 @@ Equation.prototype = {
       var val = this.variable(token).value;
       var els = [].slice.call(this.el.querySelectorAll("[data-variable="+token+"] .number"));
       els.forEach(function(el){
-        el.innerText = val;
+        el.innerText = formatNumber(val);
       }); 
     }
   }
