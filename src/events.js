@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 exports.attach = function(el){
 	var moving;
 	var startedMoving;
@@ -9,14 +11,15 @@ exports.attach = function(el){
 		startedMoving = false;
 	});
 
-	document.body.addEventListener("mousemove", function(e){
+	var i = 0;
+	document.body.addEventListener("mousemove", _.throttle(function(e){
 		if(!moving) return;
 		if(!startedMoving){
 			beforeChange(moving, e.clientX);
 			startedMoving = true;
 		}
 		change(moving, e.clientX);
-	});
+	}, 100));
 
 	document.body.addEventListener("mouseup", function(e){
 		if(moving) afterChange(moving, e.clientX);

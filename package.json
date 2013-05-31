@@ -25,7 +25,8 @@
 
   "devDependencies": {
     "vows": "0.7.x",
-    "browserify": "2.14.x"
+    "browserify": "2.14.x",
+    "underscore": "1.4.4"
   },
 
   "license": "MIT"

@@ -39,20 +39,15 @@ Equation.prototype = {
 
     try {
       var compiled = this.compiled = compiler.compile(parser.parse(exprInput));
-      var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
-      this.output.innerHTML = text;
-    } catch(e) {}
 
-    if(compiled) {
+      if(!compiled) return;
+
       this.solver = this.buildSolver(compiled);
       this.total = compiled.variables[this.totalName].value;
-    }
 
-    if(exprInput.length > 0){
-      var width = measure(exprInput.replace(" ", "&nbsp;"));
-      this.answer.style.left = width + "px";
-      this.answer.innerHTML = "<span class='op'>=</span> <span class='variable unlocked' data-variable='"+this.totalName+"'><span class='number'>"+this.total+"</span></span>";
-    }
+      var text = compiled.display.map(this.displayItem.bind(this)).join(" ");
+      this.output.innerHTML = text + " <span class='op'>=</span> <span class='variable unlocked' data-variable='"+this.totalName+"'><span class='number'>"+this.total+"</span></span>";
+    } catch(e) {}
   },
 
   buildSolver: function(compiled){
@@ -73,11 +68,11 @@ Equation.prototype = {
   beforeChange: function(e){
     // fixme: escape variable names
     this.editVar = this.variable(e.target.dataset.variable);
-    this.removeStay(this.editVar);
     this.startX = e.detail.x; 
     this.startVal = this.editVar.value || 0;
+    this.removeStay(this.editVar);
     this.markAsMoving(this.editVar, true);
-    this.solver.addEditVar(this.editVar, c.Strength.high).beginEdit(c);
+    this.solver.addEditVar(this.editVar, c.Strength.high).beginEdit();
   },
 
   afterChange: function(){
@@ -101,7 +96,8 @@ Equation.prototype = {
 
   addStay: function(variable){
     if(variable.stay) return;
-    variable.stay = new c.StayConstraint(variable, c.Strength.required, 0);
+    console.log("adding stay for", variable, "at", variable.value);
+    variable.stay = new c.StayConstraint(variable, c.Strength.required);
     this.solver.addConstraint(variable.stay);
   },
 
