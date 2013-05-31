@@ -91,7 +91,7 @@ Equation.prototype = {
   },
 
   change: function(e){
-    this.solver.suggestValue(this.editVar, this.startVal+(e.detail.x-this.startX)/2).resolve();
+    this.solver.suggestValue(this.editVar, this.startVal+e.detail.x-this.startX).resolve();
     this.updateForSolver();
   },
 
@@ -101,14 +101,12 @@ Equation.prototype = {
 
   addStay: function(variable){
     if(variable.stay) return;
-    console.log("Adding stay for ", variable.name, variable.value);
     variable.stay = new c.StayConstraint(variable, c.Strength.required);
     this.solver.addConstraint(variable.stay);
   },
 
   removeStay: function(variable){
     if(!variable.stay) return;
-    console.log("Removing stay for ", variable.name, variable.value);
     this.solver.removeConstraint(variable.stay);
     variable.stay = null;
   },
@@ -129,7 +127,7 @@ Equation.prototype = {
     [].slice.call(this.el.querySelectorAll("[data-variable="+varToken+"]")).forEach(function(el){
       el.classList.add("unlocked");
     });
-    
+
     this.removeStay(variable);
   },
 
